@@ -76,5 +76,6 @@ jobs:
 
       - name: Deploy repo
         run: |
+          ls
           cd repo
           ls
