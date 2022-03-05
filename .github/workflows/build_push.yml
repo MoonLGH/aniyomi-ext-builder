@@ -53,17 +53,14 @@ jobs:
           pwd
 
       - name: Build extensions
-        uses: gradle/gradle-build-action@v1
+        uses: gradle/gradle-build-action@v2
         env:
           CI_PUSH: "true"
         with:
           build-root-directory: master
           gradle-executable: master/gradlew
           arguments: assembleRelease
-          wrapper-cache-enabled: true
-          dependencies-cache-enabled: true
-          configuration-cache-enabled: true
-
+      
       - name: Sign APKs
         run: |
           cd master
