@@ -37,11 +37,10 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Copy CI Files properties 
+      - name: Copy CI gradle.properties 
         run: |
           mkdir -p ~/.gradle
           cp .github/runner-files/ci-gradle.properties ~/.gradle/gradle.properties
-          echo ${{ secrets.SIGNING_KEY }} -n | base64 -di > signingkey.jks
 
       - name: Make gradle and sign-apk.sh executeable
         run: |
@@ -53,11 +52,17 @@ jobs:
       - name: Build extensions
         uses: gradle/gradle-build-action@v2
         env:
-          ALIAS: ${{ secrets.ALIAS }}
-          KEY_STORE_PASSWORD: ${{ secrets.KEY_STORE_PASSWORD }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          CI_PUSH: "true"
         with:
           arguments: assembleRelease
+      
+      - name: Sign APKs
+        run: |
+          ./.github/scripts/sign-apks.sh \
+            ${{ secrets.SIGNING_KEY }} \
+            ${{ secrets.ALIAS }} \
+            ${{ secrets.KEY_STORE_PASSWORD }} \
+            ${{ secrets.KEY_PASSWORD }}
 
       - name: Create repo artifacts
         run: |

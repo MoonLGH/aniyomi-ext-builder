@@ -39,15 +39,6 @@ android {
         ]
     }
 
-    signingConfigs {
-        release {
-            storeFile rootProject.file("signingkey.jks")
-            storePassword System.getenv("KEY_STORE_PASSWORD")
-            keyAlias System.getenv("ALIAS")
-            keyPassword System.getenv("KEY_PASSWORD")
-        }
-    }
-
     dependenciesInfo {
         includeInApk = false
     }
