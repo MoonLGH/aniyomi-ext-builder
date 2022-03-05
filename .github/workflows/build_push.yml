@@ -58,7 +58,7 @@ jobs:
           CI_PUSH: "true"
         with:
           build-root-directory: master
-          wrapper-directory: master
+          gradle-executable: master
           arguments: assembleRelease
           wrapper-cache-enabled: true
           dependencies-cache-enabled: true
