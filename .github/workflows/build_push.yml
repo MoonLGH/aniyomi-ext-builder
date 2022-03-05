@@ -77,4 +77,4 @@ jobs:
       - name: Deploy repo
         run: |
           cd repo
-          ./.github/scripts/commit-repo.sh
+          ../.github/scripts/commit-repo.sh
