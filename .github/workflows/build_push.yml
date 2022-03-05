@@ -64,22 +64,17 @@ jobs:
             ${{ secrets.KEY_STORE_PASSWORD }} \
             ${{ secrets.KEY_PASSWORD }}
 
-      - name: ls
-        run : |
-          ls
-          cd apk
-          ls
-
-      - name: Create repo artifacts
-        run: |
-          ./.github/scripts/create-repo.sh
-
       - name: Checkout repo branch
         uses: actions/checkout@v2
         with:
           ref: repo
           path: repo
 
+      - name: copy apks
+        run: |
+          cp -f ./apk/* ./repo/
+          cd repo
+          ls
       - name: Deploy repo
         run: |
           cd repo
