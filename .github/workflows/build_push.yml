@@ -46,9 +46,9 @@ jobs:
 
       - name: test
         run: |
-          dir
+          ls
           pwd
-          
+
       - name: Build extensions
         uses: eskatos/gradle-command-action@v1
         env:
