@@ -65,8 +65,11 @@ jobs:
             ${{ secrets.KEY_PASSWORD }}
 
       - name: ls
-        run : ls
-        
+        run : |
+          ls
+          cd apk
+          ls
+
       - name: Create repo artifacts
         run: |
           ./.github/scripts/create-repo.sh
