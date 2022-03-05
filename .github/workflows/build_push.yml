@@ -48,6 +48,9 @@ jobs:
         run: |
           ls
           pwd
+          cd master
+          ls
+          pwd
 
       - name: Build extensions
         uses: eskatos/gradle-command-action@v1
