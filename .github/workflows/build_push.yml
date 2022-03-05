@@ -37,7 +37,7 @@ jobs:
         with:
           java-version: 1.8
 
-      - name: Copy CI gradle.properties
+      - name: Copy CI gradle.properties 
         run: |
           mkdir -p ~/.gradle
           cp .github/runner-files/ci-gradle.properties ~/.gradle/gradle.properties
@@ -49,9 +49,9 @@ jobs:
           ls
           pwd
 
-    - name: Make gradlew executable
-      run: chmod +x ./gradlew
-      
+      - name: make gradlew executeable
+        run: chmod +x ./gradlew
+
       - name: Build extensions
         uses: gradle/gradle-build-action@v2
         env:
