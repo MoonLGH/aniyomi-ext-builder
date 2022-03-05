@@ -44,6 +44,11 @@ jobs:
           mkdir -p ~/.gradle
           cp .github/runner-files/ci-gradle.properties ~/.gradle/gradle.properties
 
+      - name: test
+        run: |
+          dir
+          pwd
+          
       - name: Build extensions
         uses: eskatos/gradle-command-action@v1
         env:
