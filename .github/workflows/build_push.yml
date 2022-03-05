@@ -49,8 +49,10 @@ jobs:
           ls
           pwd
 
-      - name: make gradlew executeable
-        run: chmod +x ./gradlew
+      - name: Make gradle and sign-apk.sh executeable
+        run: |
+        chmod +x ./gradlew
+        chmod +x ./.github/scripts/create-repo.sh
 
       - name: Build extensions
         uses: gradle/gradle-build-action@v2
