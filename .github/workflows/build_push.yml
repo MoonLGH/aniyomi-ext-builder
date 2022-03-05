@@ -72,9 +72,10 @@ jobs:
 
       - name: copy apks
         run: |
-          cp -f ./apk/* ./repo/
+          cp -f ./apk/* ./repo/apk
           cd repo
           ls
+          
       - name: Deploy repo
         run: |
           cd repo
