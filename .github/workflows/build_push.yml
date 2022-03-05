@@ -74,15 +74,7 @@ jobs:
           ref: repo
           path: repo
 
-      - name: Commit files
+      - name: Deploy repo
         run: |
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git config --global user.name "github-actions[bot]"s
           cd repo
-          git commit -m "Add changes" -a
-
-      - name: Push changes
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: "repo"
+          ./.github/scripts/commit-repo.sh
