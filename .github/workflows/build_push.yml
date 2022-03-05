@@ -49,6 +49,9 @@ jobs:
           ls
           pwd
 
+    - name: Make gradlew executable
+      run: chmod +x ./gradlew
+      
       - name: Build extensions
         uses: gradle/gradle-build-action@v2
         env:
@@ -77,4 +80,4 @@ jobs:
       - name: Deploy repo
         run: |
           cd repo
-          ../master/.github/scripts/commit-repo.sh
+          ../.github/scripts/commit-repo.sh
