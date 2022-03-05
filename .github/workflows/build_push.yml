@@ -31,7 +31,6 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: master
-          path: master
 
       - name: Set up JDK 1.8
         uses: actions/setup-java@v1
@@ -40,7 +39,6 @@ jobs:
 
       - name: Copy CI gradle.properties
         run: |
-          cd master
           mkdir -p ~/.gradle
           cp .github/runner-files/ci-gradle.properties ~/.gradle/gradle.properties
 
@@ -48,7 +46,6 @@ jobs:
         run: |
           ls
           pwd
-          cd master
           ls
           pwd
 
@@ -57,13 +54,10 @@ jobs:
         env:
           CI_PUSH: "true"
         with:
-          build-root-directory: master
-          gradle-executable: master/gradlew
           arguments: assembleRelease
       
       - name: Sign APKs
         run: |
-          cd master
           ./.github/scripts/sign-apks.sh \
             ${{ secrets.SIGNING_KEY }} \
             ${{ secrets.ALIAS }} \
@@ -72,7 +66,6 @@ jobs:
 
       - name: Create repo artifacts
         run: |
-          cd master
           ./.github/scripts/create-repo.sh
 
       - name: Checkout repo branch
