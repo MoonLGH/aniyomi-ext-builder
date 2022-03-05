@@ -76,6 +76,5 @@ jobs:
 
       - name: Deploy repo
         run: |
-          ls
           cd repo
-          ls
+          ../.github/scripts/commit-repo.sh
