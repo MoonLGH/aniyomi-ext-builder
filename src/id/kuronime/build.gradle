@@ -2,10 +2,10 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 ext {
-    extName = 'OtakuDesu'
-    pkgNameSuffix = 'id.otakudesu'
-    extClass = '.OtakuDesu'
-    extVersionCode = 10
+    extName = 'Kuronime'
+    pkgNameSuffix = 'id.kuronime'
+    extClass = '.Kuronime'
+    extVersionCode = 1
     libVersion = '12'
 }
 
