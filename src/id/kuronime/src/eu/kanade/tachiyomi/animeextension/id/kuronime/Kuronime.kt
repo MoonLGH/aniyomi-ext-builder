@@ -38,10 +38,10 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         val anime = SAnime.create()
         val infodetail = document.select("div.infodetail")
         val status = parseStatus(infodetail.select("ul > li:nth-child(3)").text().replace("Status: ", ""))
-        anime.title = infox.select("ul > li:nth-child(1)").text().replace("Judul: ", "")
-        anime.genre = infox.select("ul > li:nth-child(2)").joinToString(", ") { it.text() }
+        anime.title = infodetail.select("ul > li:nth-child(1)").text().replace("Judul: ", "")
+        anime.genre = infodetail.select("ul > li:nth-child(2)").joinToString(", ") { it.text() }
         anime.status = status
-        anime.artist = infox.select("ul > li:nth-child(4)").text().replace("Studio: ","")
+        anime.artist = infodetail.select("ul > li:nth-child(4)").text().replace("Studio: ","")
         anime.author = "UNKNOWN"
         anime.description = "Synopsis: \n" + document.select("div.main-info > div.con > div.r > div > span > p").text()
         return anime
