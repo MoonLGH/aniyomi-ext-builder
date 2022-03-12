@@ -100,8 +100,8 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun popularAnimeFromElement(element: Element): SAnime {
         val anime = SAnime.create()
-        anime.title = document.select("div > a > div.tt > h2").text()
-        anime.thumbnail_url = document.select("img").first().attr("src")
+        anime.title = element.select("div > a > div.tt > h2").text()
+        anime.thumbnail_url = element.select("img").first().attr("src")
         anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
         return anime
     }
@@ -114,8 +114,8 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun searchAnimeFromElement(element: Element): SAnime {
         val anime = SAnime.create()
-        anime.title = document.select("div > a > div.tt > h2").text()
-        anime.thumbnail_url = document.select("img").first().attr("src")
+        anime.title = element.select("div > a > div.tt > h2").text()
+        anime.thumbnail_url = element.select("img").first().attr("src")
         anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
         return anime
     }
