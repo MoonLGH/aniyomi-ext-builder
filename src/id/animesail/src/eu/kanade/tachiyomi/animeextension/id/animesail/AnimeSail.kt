@@ -100,7 +100,7 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun popularAnimeFromElement(element: Element): SAnime {
         val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
-        return getDetail(resanime)
+        return getDetail(res)
     }
 
     override fun popularAnimeNextPageSelector(): String = "div.pagination > a.next.page-numbers"
@@ -111,7 +111,7 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun searchAnimeFromElement(element: Element): SAnime {
         val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
-        return getDetail(resanime)
+        return getDetail(res)
     }
 
     override fun searchAnimeNextPageSelector(): String = "a.next.page-numbers"
