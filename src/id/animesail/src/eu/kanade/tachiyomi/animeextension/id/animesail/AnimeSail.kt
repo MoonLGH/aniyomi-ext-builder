@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.animeextension.id.minioppai
+package eu.kanade.tachiyomi.animeextension.id.animesail
 
 import android.app.Application
 import android.content.SharedPreferences
@@ -25,26 +25,29 @@ import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
-    override val baseUrl: String = "https://minioppai.org"
+class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
+    override val baseUrl: String = "https://animesail.com"
     override val lang: String = "id"
-    override val name: String = "MiniOppai"
+    override val name: String = "AnimeSail"
     override val supportsLatest: Boolean = true
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
     }
 
-    override fun animeDetailsParse(document: Document): SAnime {
+    override fun animeDetailsParse(document: Document): SAnime = getDetail(document)
+
+    private fun getDetail(document: Document): SAnime {
         val anime = SAnime.create()
-        val infox = document.select("div.infox")
-        val status = parseStatus(infox.select("div.spe > span:nth-child(2)").text().replace("Status: ", ""))
-        anime.title = infox.select("div.infox > h1").text().replace("Judul: ", "")
-        anime.genre = infox.select("div.spe > span:nth-child(1)").joinToString(", ") { it.text() }
+        val entrycontent = document.select("div.entry-content.serial-info")
+        val status = parseStatus(entrycontent.select("table > tbody > tr:nth-child(4) > td").text()
+        anime.title = document.select("header > h1").text()
+        anime.genre = entrycontent.select("table > tbody > tr:nth-child(3) > td").joinToString(", ") { it.text() }
         anime.status = status
-        anime.artist = infox.select("div.spe > span:nth-child(3)").text().replace("Studio: ","")
+        anime.artist = entrycontent.select("table > tbody > tr:nth-child(5) > td").text()
         anime.author = "UNKNOWN"
-        anime.description = "Synopsis: \n" + document.select("div.desc > div > span").text()
+        anime.description = "Synopsis: \n" + entrycontent.select("p:nth-child(2)").text()
+        anime.thumbnail_url = document.select("div.entry-content.serial-info > img").attr("src")
         return anime
     }
 
@@ -58,13 +61,13 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun episodeFromElement(element: Element): SEpisode {
         val episode = SEpisode.create()
-        val epsNum = getNumberFromEpsString(element.select("span.lchx").text())
+        val epsNum = getNumberFromEpsString(element.select("a").text())
         episode.setUrlWithoutDomain(element.select("a").first().attr("href"))
         episode.episode_number = when {
             (epsNum.isNotEmpty()) -> epsNum.toFloat()
             else -> 1F
         }
-        episode.name = element.select("span.lchx").text()
+        episode.name = element.select("a").text()
         episode.date_upload = System.currentTimeMillis()
 
         return episode
@@ -74,9 +77,13 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         return epsStr.filter { it.isDigit() }
     }
 
-    override fun episodeListSelector(): String = "div.bixbox.bxcl > ul > li"
+    override fun episodeListSelector(): String = "ul.daftar > li"
 
-    override fun latestUpdatesFromElement(element: Element): SAnime = getAnimeFromAnimeElement(element)
+    override fun latestUpdatesFromElement(element: Element): SAnime {
+        val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
+        val resanime = client.newCall(GET(res.select("div.entry-content > i > a").first().attr("href"))).execute().asJsoup()
+        return getDetail(resanime)
+    }
 
     private fun getAnimeFromAnimeElement(element: Element): SAnime {
         val anime = SAnime.create()
@@ -85,21 +92,27 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         anime.title = element.select("div > a > div.tt").text()
         return anime
     }
-    override fun latestUpdatesNextPageSelector(): String = "div.pagination > a.next"
+    override fun latestUpdatesNextPageSelector(): String = "div.hpage > a.r"
 
-    override fun latestUpdatesRequest(page: Int): Request = GET("$baseUrl/anime/?page=$page&status=ongoing&sub=&order=update")
+    override fun latestUpdatesRequest(page: Int): Request = GET("$baseUrl/page/$page")
 
-    override fun latestUpdatesSelector(): String = "div.listupd > div"
+    override fun latestUpdatesSelector(): String = "div.listupd > article"
 
-    override fun popularAnimeFromElement(element: Element): SAnime = getAnimeFromAnimeElement(element)
+    override fun popularAnimeFromElement(element: Element): SAnime {
+        val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
+        return getDetail(resanime)
+    }
 
-    override fun popularAnimeNextPageSelector(): String = "div.pagination > a.next"
+    override fun popularAnimeNextPageSelector(): String = "div.pagination > a.next.page-numbers"
 
-    override fun popularAnimeRequest(page: Int): Request = GET("$baseUrl/anime/?page=$page")
+    override fun popularAnimeRequest(page: Int): Request = GET("$baseUrl/page/$page/?s=")
 
-    override fun popularAnimeSelector(): String = "div.listupd > div"
+    override fun popularAnimeSelector(): String = "div.listupd > article"
 
-    override fun searchAnimeFromElement(element: Element): SAnime = getAnimeFromAnimeElement(element)
+    override fun searchAnimeFromElement(element: Element): SAnime {
+        val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
+        return getDetail(resanime)
+    }
 
     override fun searchAnimeNextPageSelector(): String = "a.next.page-numbers"
 
@@ -108,11 +121,12 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         return GET("$baseUrl/page/$page/?s=$query")
     }
 
-    override fun searchAnimeSelector(): String = "div.listupd > div"
+    override fun searchAnimeSelector(): String = "div.listupd > article"
 
     override fun videoListParse(response: Response): List<Video> {
         val document = response.asJsoup()
-        val patternZippy = "div.bixbox.mctn > div.soraddlx > div.dlmx > a:contains(zippy)"
+        val res = client.newCall(GET(element.select("a.singledl").attr("href"))).execute().asJsoup()
+        val patternZippy = "div.page > table > tbody > tr > td > a:contains(zippy)"
 
         val zippy = document.select(patternZippy).mapNotNull {
             runCatching { zippyFromElement(it) }.getOrNull()
@@ -124,10 +138,9 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override fun videoFromElement(element: Element): Video = throw Exception("not used")
 
     private fun zippyFromElement(element: Element): Video {
-        val zipurl = URLDecoder.decode(element.attr("href"), "UTF-8").substringAfter("?s=")
-        val res = client.newCall(GET(zipurl)).execute().asJsoup()
+        val res = client.newCall(GET(element.attr("href"))).execute().asJsoup()
         val scr = res.select("script:containsData(dlbutton)").html()
-        var url = zipurl.substringBefore("/v/")
+        var url = element.attr("href").substringBefore("/v/")
         val numbs = scr.substringAfter("\" + (").substringBefore(") + \"")
         val firstString = scr.substringAfter(" = \"").substringBefore("\" + (")
         val num = numbs.substringBefore(" % ").toInt()
