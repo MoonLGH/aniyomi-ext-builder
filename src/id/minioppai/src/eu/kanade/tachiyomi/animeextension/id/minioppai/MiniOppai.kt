@@ -112,7 +112,7 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun videoListParse(response: Response): List<Video> {
         val document = response.asJsoup()
-        val patternZippy = "div.bixbox.mctn > div.soraddlx > div.dlmx"
+        val patternZippy = "div.bixbox.mctn > div.soraddlx > div.dlmx > a:contains(zippy)"
 
         val zippy = document.select(patternZippy).mapNotNull {
             runCatching { zippyFromElement(it) }.getOrNull()
