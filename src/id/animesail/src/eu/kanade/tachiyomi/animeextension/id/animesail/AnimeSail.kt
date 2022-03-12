@@ -99,8 +99,11 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override fun latestUpdatesSelector(): String = "div.listupd > article"
 
     override fun popularAnimeFromElement(element: Element): SAnime {
-        val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
-        return getDetail(res)
+        val anime = SAnime.create()
+        anime.title = document.select("div > a > div.tt > h2").text()
+        anime.thumbnail_url = document.select("img").first().attr("src")
+        anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
+        return anime
     }
 
     override fun popularAnimeNextPageSelector(): String = "div.pagination > a.next.page-numbers"
@@ -110,8 +113,11 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override fun popularAnimeSelector(): String = "div.listupd > article"
 
     override fun searchAnimeFromElement(element: Element): SAnime {
-        val res = client.newCall(GET(element.select("div > a").attr("href"))).execute().asJsoup()
-        return getDetail(res)
+        val anime = SAnime.create()
+        anime.title = document.select("div > a > div.tt > h2").text()
+        anime.thumbnail_url = document.select("img").first().attr("src")
+        anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
+        return anime
     }
 
     override fun searchAnimeNextPageSelector(): String = "a.next.page-numbers"
