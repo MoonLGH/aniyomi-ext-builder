@@ -40,7 +40,7 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     private fun getDetail(document: Document): SAnime {
         val anime = SAnime.create()
         val entrycontent = document.select("div.entry-content.serial-info")
-        val status = parseStatus(entrycontent.select("table > tbody > tr:nth-child(4) > td").text()
+        val status = parseStatus(entrycontent.select("table > tbody > tr:nth-child(4) > td").text())
         anime.title = document.select("header > h1").text()
         anime.genre = entrycontent.select("table > tbody > tr:nth-child(3) > td").joinToString(", ") { it.text() }
         anime.status = status
