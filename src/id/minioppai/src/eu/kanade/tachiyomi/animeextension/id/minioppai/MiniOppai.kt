@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.animeextension.id.kuronime
+package eu.kanade.tachiyomi.animeextension.id.minioppais
 
 import android.app.Application
 import android.content.SharedPreferences
@@ -24,10 +24,10 @@ import java.lang.StringBuilder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
-    override val baseUrl: String = "https://kuronime.org"
+class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
+    override val baseUrl: String = "https://minioppai.org"
     override val lang: String = "id"
-    override val name: String = "Kuronime"
+    override val name: String = "MiniOppai"
     override val supportsLatest: Boolean = true
 
     private val preferences: SharedPreferences by lazy {
@@ -36,14 +36,14 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun animeDetailsParse(document: Document): SAnime {
         val anime = SAnime.create()
-        val infodetail = document.select("div.infodetail")
-        val status = parseStatus(infodetail.select("ul > li:nth-child(3)").text().replace("Status: ", ""))
-        anime.title = infodetail.select("ul > li:nth-child(1)").text().replace("Judul: ", "")
-        anime.genre = infodetail.select("ul > li:nth-child(2)").joinToString(", ") { it.text() }
+        val infox = document.select("div.infox")
+        val status = parseStatus(infox.select("div.spe > span:nth-child(2)").text().replace("Status: ", ""))
+        anime.title = infox.select("div.infox > h1").text().replace("Judul: ", "")
+        anime.genre = infox.select("div.spe > span:nth-child(1)").joinToString(", ") { it.text() }
         anime.status = status
-        anime.artist = infodetail.select("ul > li:nth-child(4)").text().replace("Studio: ","")
+        anime.artist = infox.select("div.spe > span:nth-child(3)").text().replace("Studio: ","")
         anime.author = "UNKNOWN"
-        anime.description = "Synopsis: \n" + document.select("div.main-info > div.con > div.r > div > span > p").text()
+        anime.description = "Synopsis: \n" + document.select("div.desc > div > span").text()
         return anime
     }
 
@@ -81,14 +81,14 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         val anime = SAnime.create()
         anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
         anime.thumbnail_url = element.select("div > a > div.limit > img").first().attr("src")
-        anime.title = element.select("div > a > div.tt > h4").text()
+        anime.title = element.select("div > a > div.tt").text()
         return anime
     }
     override fun latestUpdatesNextPageSelector(): String = "div.pagination > a.next"
 
     override fun latestUpdatesRequest(page: Int): Request = GET("$baseUrl/anime/?page=$page&status=ongoing&sub=&order=update")
 
-    override fun latestUpdatesSelector(): String = "div.listupd > article"
+    override fun latestUpdatesSelector(): String = "div.listupd > div"
 
     override fun popularAnimeFromElement(element: Element): SAnime = getAnimeFromAnimeElement(element)
 
@@ -96,7 +96,7 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun popularAnimeRequest(page: Int): Request = GET("$baseUrl/anime/?page=$page")
 
-    override fun popularAnimeSelector(): String = "div.listupd > article"
+    override fun popularAnimeSelector(): String = "div.listupd > div"
 
     override fun searchAnimeFromElement(element: Element): SAnime = getAnimeFromAnimeElement(element)
 
@@ -107,11 +107,11 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         return GET("$baseUrl/page/$page/?s=$query")
     }
 
-    override fun searchAnimeSelector(): String = "div.listupd > article"
+    override fun searchAnimeSelector(): String = "div.listupd > div"
 
     override fun videoListParse(response: Response): List<Video> {
         val document = response.asJsoup()
-        val patternZippy = "div.soraddl > div > a:nth-child(3)"
+        val patternZippy = "iv.bixbox.mctn > div > div:nth-child(7) > a"
 
         val zippy = document.select(patternZippy).mapNotNull {
             runCatching { zippyFromElement(it) }.getOrNull()
@@ -123,9 +123,10 @@ class Kuronime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override fun videoFromElement(element: Element): Video = throw Exception("not used")
 
     private fun zippyFromElement(element: Element): Video {
-        val res = client.newCall(GET(element.attr("href"))).execute().asJsoup()
+        val zipurl = URLDecoder.decode(element.attr("href"), "UTF-8").substringAfter("?s=")
+        val res = client.newCall(GET(zipurl)).execute().asJsoup()
         val scr = res.select("script:containsData(dlbutton)").html()
-        var url = element.attr("href").substringBefore("/v/")
+        var url = ziprul.substringBefore("/v/")
         val numbs = scr.substringAfter("\" + (").substringBefore(") + \"")
         val firstString = scr.substringAfter(" = \"").substringBefore("\" + (")
         val num = numbs.substringBefore(" % ").toInt()

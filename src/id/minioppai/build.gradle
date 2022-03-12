@@ -2,9 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 ext {
-    extName = 'Kuronime'
-    pkgNameSuffix = 'id.kuronime'
-    extClass = '.Kuronime'
+    extName = 'MiniOppai'
+    pkgNameSuffix = 'id.minioppai'
+    extClass = '.MiniOppai'
     extVersionCode = 1
     libVersion = '12'
 }
