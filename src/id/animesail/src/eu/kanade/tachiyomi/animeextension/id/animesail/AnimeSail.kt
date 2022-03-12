@@ -125,7 +125,7 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun videoListParse(response: Response): List<Video> {
         val document = response.asJsoup()
-        val res = client.newCall(GET(element.select("a.singledl").attr("href"))).execute().asJsoup()
+        val res = client.newCall(GET(document.select("a.singledl").attr("href"))).execute().asJsoup()
         val patternZippy = "div.page > table > tbody > tr > td > a:contains(zippy)"
 
         val zippy = document.select(patternZippy).mapNotNull {
