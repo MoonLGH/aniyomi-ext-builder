@@ -1,4 +1,4 @@
-package eu.kanade.tachiyomi.animeextension.id.minioppais
+package eu.kanade.tachiyomi.animeextension.id.minioppai
 
 import android.app.Application
 import android.content.SharedPreferences
