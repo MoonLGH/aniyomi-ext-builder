@@ -96,7 +96,21 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun latestUpdatesRequest(page: Int): Request = GET("$baseUrl/page/$page")
 
-    override fun latestUpdatesSelector(): String = "div.listupd > article"
+    override fun latestUpdatesSelector(): String = throw Exception("not used")
+
+    override fun latestUpdatesParse(response: Response): AnimesPage {
+        val document = response.asJsoup()
+
+        val animes = document.select("div.listupd").first().select("article").map { element ->
+            latestUpdatesFromElement(element)
+        }
+
+        val hasNextPage = latestUpdatesNextPageSelector()?.let { selector ->
+            document.select(selector).first()
+        } != null
+
+        return AnimesPage(animes, hasNextPage)
+    }
 
     override fun popularAnimeFromElement(element: Element): SAnime {
         val anime = SAnime.create()
@@ -134,7 +148,7 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         val res = client.newCall(GET(document.select("a.singledl").attr("href"))).execute().asJsoup()
         val patternZippy = "div.page > table > tbody > tr > td > a:contains(zippy)"
 
-        val zippy = document.select(patternZippy).mapNotNull {
+        val zippy = res.select(patternZippy).mapNotNull {
             runCatching { zippyFromElement(it) }.getOrNull()
         }
 
