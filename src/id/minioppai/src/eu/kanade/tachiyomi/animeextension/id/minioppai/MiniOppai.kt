@@ -21,6 +21,7 @@ import uy.kohesive.injekt.api.get
 import java.lang.Exception
 import java.lang.RuntimeException
 import java.lang.StringBuilder
+import java.net.URLDecoder
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -126,7 +127,7 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         val zipurl = URLDecoder.decode(element.attr("href"), "UTF-8").substringAfter("?s=")
         val res = client.newCall(GET(zipurl)).execute().asJsoup()
         val scr = res.select("script:containsData(dlbutton)").html()
-        var url = ziprul.substringBefore("/v/")
+        var url = zipurl.substringBefore("/v/")
         val numbs = scr.substringAfter("\" + (").substringBefore(") + \"")
         val firstString = scr.substringAfter(" = \"").substringBefore("\" + (")
         val num = numbs.substringBefore(" % ").toInt()
