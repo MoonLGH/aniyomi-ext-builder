@@ -81,7 +81,7 @@ class MiniOppai : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     private fun getAnimeFromAnimeElement(element: Element): SAnime {
         val anime = SAnime.create()
         anime.setUrlWithoutDomain(element.select("div > a").first().attr("href"))
-        anime.thumbnail_url = element.select("img").first().attr("data-src")
+        anime.thumbnail_url = element.select("div > a > div.limit > noscript > img").first().attr("src")
         anime.title = element.select("div > a > div.tt").text()
         return anime
     }
