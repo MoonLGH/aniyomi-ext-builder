@@ -13,6 +13,7 @@ import eu.kanade.tachiyomi.animesource.model.Video
 import eu.kanade.tachiyomi.animesource.online.ParsedAnimeHttpSource
 import eu.kanade.tachiyomi.network.GET
 import eu.kanade.tachiyomi.util.asJsoup
+import okhttp3.Dns
 import okhttp3.OkHttpClient
 import okhttp3.Request
 import okhttp3.Response
@@ -32,7 +33,9 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override val lang: String = "id"
     override val name: String = "AnimeSail"
     override val supportsLatest: Boolean = true
-    override val client: OkHttpClient = network.cloudflareClient
+    override val client: OkHttpClient = network.cloudflareClient.newBuilder()
+        .dns(Dns.SYSTEM)
+        .build()
 
     private val preferences: SharedPreferences by lazy {
         Injekt.get<Application>().getSharedPreferences("source_$id", 0x0000)
