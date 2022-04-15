@@ -28,7 +28,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 
 class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
-    override val baseUrl: String = "https://111.90.143.42"
+    override val baseUrl: String = "https://animesail.com"
     override val lang: String = "id"
     override val name: String = "AnimeSail"
     override val supportsLatest: Boolean = true
