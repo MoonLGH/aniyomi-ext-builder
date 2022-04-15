@@ -34,7 +34,6 @@ class AnimeSail : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     override val name: String = "AnimeSail"
     override val supportsLatest: Boolean = true
     override val client: OkHttpClient = network.cloudflareClient.newBuilder()
-        .dns(Dns.SYSTEM)
         .build()
 
     private val preferences: SharedPreferences by lazy {
