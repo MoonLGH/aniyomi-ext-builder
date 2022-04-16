@@ -118,8 +118,7 @@ class Kuramanime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
 
     override fun searchAnimeSelector(): String = "div.product__item"
 
-    override fun videoListSelector() = "div.download > ul > li > a:nth-child(2)"
-
+    override fun videoListSelector() = "#player > source"
     override fun List<Video>.sort(): List<Video> {
         val quality = preferences.getString("preferred_quality", null)
         if (quality != null) {
@@ -139,16 +138,8 @@ class Kuramanime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
     }
 
     override fun videoFromElement(element: Element): Video {
-        val res = client.newCall(GET(element.attr("href"))).execute().asJsoup()
-        val scr = res.select("script:containsData(dlbutton)").html()
-        var url = element.attr("href").substringBefore("/v/")
-        val numbs = scr.substringAfter("\" + (").substringBefore(") + \"")
-        val firstString = scr.substringAfter(" = \"").substringBefore("\" + (")
-        val num = numbs.substringBefore(" % ").toInt()
-        val lastString = scr.substringAfter("913) + \"").substringBefore("\";")
-        val nums = num % 51245 + num % 913
-        url += firstString + nums.toString() + lastString
-        val quality = with(lastString) {
+        val url = element.attr("src")
+        val quality = with(element.attr("size")) {
             when {
                 contains("1080p") -> "1080p"
                 contains("720p") -> "720p"
