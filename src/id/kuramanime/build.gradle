@@ -2,9 +2,9 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 ext {
-    extName = 'AnimeSail'
-    pkgNameSuffix = 'id.animesail'
-    extClass = '.AnimeSail'
+    extName = 'Kuramanime'
+    pkgNameSuffix = 'id.kuramaanime'
+    extClass = '.Kuramanime'
     extVersionCode = 1
     libVersion = '12'
 }
