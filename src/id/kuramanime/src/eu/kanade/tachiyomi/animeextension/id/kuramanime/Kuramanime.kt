@@ -141,10 +141,10 @@ class Kuramanime : ConfigurableAnimeSource, ParsedAnimeHttpSource() {
         val url = element.attr("src")
         val quality = with(element.attr("size")) {
             when {
-                contains("1080p") -> "1080p"
-                contains("720p") -> "720p"
-                contains("480p") -> "480p"
-                contains("360p") -> "360p"
+                contains("1080") -> "1080p"
+                contains("720") -> "720p"
+                contains("480") -> "480p"
+                contains("360") -> "360p"
                 else -> "Default"
             }
         }
